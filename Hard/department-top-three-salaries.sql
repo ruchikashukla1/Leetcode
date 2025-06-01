@@ -1,7 +1,11 @@
-with a as (select departmentId, max(salary) as "Salary"
-from Employee
-group by departmentId),
-b as (
-select name as "Employee", salary as "Salary", DepartmentId
-from Employee
-)
+
+with salary_ranks as (
+ select *, DENSE_RANK() OVER (
+ PARTITION BY Departmentid
+ ORDER BY departmentID asc, salary desc) as Rank
+ from employee
+   )
+
+select d.name as "Department",e.name as "Employee", e.salary as "Salary"
+from salary_ranks e inner join department d on e.departmentid=d.id
+where Rank<=3 
